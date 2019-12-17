@@ -10,11 +10,11 @@
 
 declare(strict_types=1);
 
-namespace BitBag\SyliusCmsPlugin\Repository;
+namespace BitBag\SyliusCmsPlugin\Assigner;
 
-use Sylius\Component\Product\Repository\ProductRepositoryInterface as BaseProductRepositoryInterface;
+use BitBag\SyliusCmsPlugin\Entity\TaxonAwareInterface;
 
-interface ProductRepositoryInterface extends BaseProductRepositoryInterface
+interface TaxonsAssignerInterface
 {
-    public function findByNamePart(string $phrase, ?string $locale = null): array;
+    public function assign(TaxonAwareInterface $taxonAware, array $taxonCodes): void;
 }

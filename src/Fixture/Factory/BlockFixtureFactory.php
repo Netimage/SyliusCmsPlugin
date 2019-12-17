@@ -12,11 +12,13 @@ declare(strict_types=1);
 
 namespace BitBag\SyliusCmsPlugin\Fixture\Factory;
 
+use BitBag\SyliusCmsPlugin\Assigner\ChannelsAssignerInterface;
+use BitBag\SyliusCmsPlugin\Assigner\ProductsAssignerInterface;
+use BitBag\SyliusCmsPlugin\Assigner\SectionsAssignerInterface;
+use BitBag\SyliusCmsPlugin\Assigner\TaxonsAssignerInterface;
 use BitBag\SyliusCmsPlugin\Entity\BlockInterface;
 use BitBag\SyliusCmsPlugin\Entity\BlockTranslationInterface;
-use BitBag\SyliusCmsPlugin\Entity\SectionInterface;
 use BitBag\SyliusCmsPlugin\Repository\BlockRepositoryInterface;
-use BitBag\SyliusCmsPlugin\Repository\SectionRepositoryInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Locale\Context\LocaleContextInterface;
@@ -33,34 +35,49 @@ final class BlockFixtureFactory implements FixtureFactoryInterface
     /** @var BlockRepositoryInterface */
     private $blockRepository;
 
-    /** @var SectionRepositoryInterface */
-    private $sectionRepository;
-
-    /** @var ProductRepositoryInterface */
-    private $productRepository;
-
     /** @var ChannelContextInterface */
     private $channelContext;
 
     /** @var LocaleContextInterface */
     private $localeContext;
 
+    /** @var ProductRepositoryInterface */
+    private $productRepository;
+
+    /** @var ProductsAssignerInterface */
+    private $productsAssigner;
+
+    /** @var TaxonsAssignerInterface */
+    private $taxonsAssigner;
+
+    /** @var SectionsAssignerInterface */
+    private $sectionsAssigner;
+
+    /** @var ChannelsAssignerInterface */
+    private $channelAssigner;
+
     public function __construct(
         FactoryInterface $blockFactory,
         FactoryInterface $blockTranslationFactory,
         BlockRepositoryInterface $blockRepository,
-        SectionRepositoryInterface $sectionRepository,
         ProductRepositoryInterface $productRepository,
         ChannelContextInterface $channelContext,
-        LocaleContextInterface $localeContext
+        LocaleContextInterface $localeContext,
+        ProductsAssignerInterface $productsAssigner,
+        TaxonsAssignerInterface $taxonsAssigner,
+        SectionsAssignerInterface $sectionsAssigner,
+        ChannelsAssignerInterface $channelAssigner
     ) {
         $this->blockFactory = $blockFactory;
         $this->blockTranslationFactory = $blockTranslationFactory;
         $this->blockRepository = $blockRepository;
-        $this->sectionRepository = $sectionRepository;
         $this->productRepository = $productRepository;
         $this->channelContext = $channelContext;
         $this->localeContext = $localeContext;
+        $this->productsAssigner = $productsAssigner;
+        $this->taxonsAssigner = $taxonsAssigner;
+        $this->sectionsAssigner = $sectionsAssigner;
+        $this->channelAssigner = $channelAssigner;
     }
 
     public function load(array $data): void
@@ -87,17 +104,19 @@ final class BlockFixtureFactory implements FixtureFactoryInterface
     {
         /** @var BlockInterface $block */
         $block = $this->blockFactory->createNew();
-        $products = $blockData['products'];
 
-        if (null !== $products) {
+        $products = $blockData['products'];
+        if ($products !== null) {
             $this->resolveProducts($block, $products);
         }
 
-        $this->resolveSections($block, $blockData['sections']);
+        $this->sectionsAssigner->assign($block, $blockData['sections']);
+        $this->productsAssigner->assign($block, $blockData['productCodes']);
+        $this->taxonsAssigner->assign($block, $blockData['taxons']);
+        $this->channelAssigner->assign($block, $blockData['channels']);
 
         $block->setCode($code);
         $block->setEnabled($blockData['enabled']);
-        $block->addChannel($this->channelContext->getChannel());
 
         foreach ($blockData['translations'] as $localeCode => $translation) {
             /** @var BlockTranslationInterface $blockTranslation */
@@ -120,19 +139,8 @@ final class BlockFixtureFactory implements FixtureFactoryInterface
             $this->localeContext->getLocaleCode(),
             $limit
         );
-
         foreach ($products as $product) {
             $block->addProduct($product);
-        }
-    }
-
-    private function resolveSections(BlockInterface $block, array $sections): void
-    {
-        foreach ($sections as $sectionCode) {
-            /** @var SectionInterface $section */
-            $section = $this->sectionRepository->findOneBy(['code' => $sectionCode]);
-
-            $block->addSection($section);
         }
     }
 }

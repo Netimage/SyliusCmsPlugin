@@ -8,6 +8,16 @@ Feature: Adding new page
         Given the store operates on a single channel in "United States"
         And I am logged in as an administrator
 
+    @ui @javascript @title
+    Scenario: Adding page with title
+        When I go to the create page page
+        And I fill the code with "page_with_title"
+        And I fill the slug with "page_with_title"
+        And I fill the name with "page_with_title"
+        And I fill the content with "This is a page with a title set by us."
+        And I add it
+        Then I should be notified that the page has been created
+
     @ui @javascript
     Scenario: Adding page
         When I go to the create page page
@@ -54,7 +64,7 @@ Feature: Adding new page
         And I try to add it
         Then I should be notified that "Code, Name, Slug, Meta keywords, Meta description, Content" fields are too short
 
-    @ui
+    @ui @unstable
     Scenario: Trying to add a page with too long data
         When I go to the create page page
         And I fill "Code, Name, Slug, Meta keywords, Meta description" fields with 6000 characters

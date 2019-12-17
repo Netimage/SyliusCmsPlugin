@@ -24,6 +24,7 @@ BitBag\SyliusCmsPlugin\Entity\Block:
                 joinColumns:
                     block_id:
                         referencedColumnName: id
+                        onDelete: CASCADE
                 inverseJoinColumns:
                     section_id:
                         referencedColumnName: id
@@ -39,6 +40,21 @@ BitBag\SyliusCmsPlugin\Entity\Block:
                     product_id:
                         referencedColumnName: id
                         onDelete: CASCADE
+
+
+        taxons:
+            targetEntity: Sylius\Component\Taxonomy\Model\TaxonInterface
+            joinTable:
+                name: bitbag_cms_block_taxonomies
+                joinColumns:
+                    block_id:
+                        referencedColumnName: id
+                        onDelete: CASCADE
+                inverseJoinColumns:
+                    taxon_id:
+                        referencedColumnName: id
+                        onDelete: CASCADE
+
         channels:
             targetEntity: Sylius\Component\Channel\Model\ChannelInterface
             joinTable:
@@ -46,6 +62,7 @@ BitBag\SyliusCmsPlugin\Entity\Block:
                 joinColumns:
                     block_id:
                         referencedColumnName: id
+                        onDelete: CASCADE
                 inverseJoinColumns:
                     channel_id:
                         referencedColumnName: id

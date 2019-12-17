@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace Tests\BitBag\SyliusCmsPlugin\Behat\Page\Shop\Page;
 
 use Behat\Mink\Element\NodeElement;
-use Sylius\Behat\Page\SymfonyPage;
+use FriendsOfBehat\PageObjectExtension\Page\SymfonyPage;
 
 final class ShowPage extends SymfonyPage implements ShowPageInterface
 {
@@ -68,6 +68,11 @@ final class ShowPage extends SymfonyPage implements ShowPageInterface
     public function hasPageImage(): bool
     {
         return $this->getElement('page-image')->isVisible();
+    }
+
+    public function hasTitle(string $title): bool
+    {
+        return $this->getSession()->evaluateScript('return document.title') === $title;
     }
 
     protected function getDefinedElements(): array

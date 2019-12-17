@@ -19,12 +19,13 @@ use Sylius\Component\Core\Model\ProductInterface;
 
 class PageRepository extends EntityRepository implements PageRepositoryInterface
 {
-    public function createListQueryBuilder(string $locale): QueryBuilder
+    public function createListQueryBuilder(string $localeCode): QueryBuilder
     {
         return $this->createQueryBuilder('o')
-            ->innerJoin('o.translations', 'translation')
-            ->where('translation.locale = :locale')
-            ->setParameter('locale', $locale)
+            ->addSelect('translation')
+            ->leftJoin('o.translations', 'translation', 'WITH', 'translation.locale = :localeCode')
+            ->leftJoin('o.sections', 'sections')
+            ->setParameter('localeCode', $localeCode)
         ;
     }
 
@@ -84,6 +85,21 @@ class PageRepository extends EntityRepository implements PageRepositoryInterface
             ->andWhere('channels.code = :channelCode')
             ->setParameter('sectionCode', $sectionCode)
             ->setParameter('channelCode', $channelCode)
+        ;
+    }
+
+    public function findBySectionCode(string $sectionCode, ?string $localeCode): array
+    {
+        return $this->createQueryBuilder('o')
+            ->leftJoin('o.translations', 'translation')
+            ->innerJoin('o.sections', 'section')
+            ->where('translation.locale = :localeCode')
+            ->andWhere('section.code = :sectionCode')
+            ->andWhere('o.enabled = true')
+            ->setParameter('sectionCode', $sectionCode)
+            ->setParameter('localeCode', $localeCode)
+            ->getQuery()
+            ->getResult()
         ;
     }
 

@@ -5,13 +5,6 @@ services:
         arguments:
             - "@sylius.generator.slug"
 
-    bitbag_sylius_cms_plugin.controller.action.admin.product_search:
-        class: BitBag\SyliusCmsPlugin\Controller\Action\Admin\ProductSearchAction
-        public: true
-        arguments:
-            - "@bitbag_sylius_cms_plugin.repository.product"
-            - "@fos_rest.view_handler.default"
-
     bitbag_sylius_cms_plugin.controller.action.admin.import_data:
         class: BitBag\SyliusCmsPlugin\Controller\Action\Admin\ImportDataAction
         public: true

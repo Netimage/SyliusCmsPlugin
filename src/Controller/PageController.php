@@ -95,11 +95,13 @@ final class PageController extends ResourceController
     private function resolveImage(PageInterface $page): void
     {
         /** @var PageImageInterface $image */
-        if (!$image = $page->getTranslation()->getImage()) {
+        $image = $page->getTranslation()->getImage();
+
+        if (!$image || !$image->getPath()) {
             return;
         }
 
-        $file = $image->getFile() ?: new File($this->getParameter('kernel.project_dir') . '/web/media/image/' . $image->getPath());
+        $file = $image->getFile() ?: new File($this->getParameter('sylius_core.public_dir') . '/media/image/' . $image->getPath());
         $base64Content = base64_encode(file_get_contents($file->getPathname()));
         $path = 'data:' . $file->getMimeType() . ';base64, ' . $base64Content;
 

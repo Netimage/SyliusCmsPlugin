@@ -19,7 +19,7 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 interface PageRepositoryInterface extends RepositoryInterface
 {
-    public function createListQueryBuilder(string $locale): QueryBuilder;
+    public function createListQueryBuilder(string $localeCode): QueryBuilder;
 
     public function findEnabled(bool $enabled): array;
 
@@ -32,6 +32,8 @@ interface PageRepositoryInterface extends RepositoryInterface
     ): ?PageInterface;
 
     public function createShopListQueryBuilder(string $sectionCode, string $channelCode): QueryBuilder;
+
+    public function findBySectionCode(string $sectionCode, ?string $localeCode): array;
 
     public function findByProduct(ProductInterface $product, string $channelCode): array;
 

@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Tests\BitBag\SyliusCmsPlugin\Behat\Page\Shop\Page;
 
-use Sylius\Behat\Page\SymfonyPageInterface;
+use FriendsOfBehat\PageObjectExtension\Page\SymfonyPageInterface;
 
 interface ShowPageInterface extends SymfonyPageInterface
 {
@@ -27,4 +27,6 @@ interface ShowPageInterface extends SymfonyPageInterface
     public function hasPageLink(string $linkName): bool;
 
     public function hasPageImage(): bool;
+
+    public function hasTitle(string $title): bool;
 }
